@@ -10,7 +10,7 @@
 # Orig Author:   V1   Author:      Simen Kjeserud
 #				 V2.0 Author:      DannyK999
 # As amended by: p3rki3
-# Version:       0.91
+# Version:       0.92
 # Dependencies:  bashbunny powershell framework extension, gohttp (for NET method only)
 # Category:      Recon
 # Target:        Windows 10 (Powershell) - may work on earlier versions, but untested
@@ -26,6 +26,7 @@ INJECT_PSSCRIPT "info.ps1" "infograbber.txt"
 
 # Cleanup
 LED CLEANUP
+REMOVE_PSTEMPFILE "info.ps1"
 CLOSE_POWERSHELL
 STASH_LOOT "InfoGrabber"
 ATTACKMODE OFF
