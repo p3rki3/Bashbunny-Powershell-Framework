@@ -135,7 +135,7 @@ If the payload runs but does not do what you expected, then there are two main t
 
 So, for example, during development you might want to start the framework with
 
-    INVOKE_POWERSHELL   NET VISIBLE ON
+    INVOKE_POWERSHELL   NET NOISY ON
 
 and then when fully developed and tested, simply revert back to... 
 
@@ -158,7 +158,7 @@ method, then you must supply sufficient 'sleep' time in payload.txt to ensure th
 
 ## Disclaimer
 This Bashbunny Powershell Framework is provided 'as-is' and I do not guarantee it is of any use to anybody for any purpose whatsoever.  Keep your use of the Framework legal and ethical.  I am not responsible for anything you decide to do with the Framework.
-TL;DR - Don't be a dick like Don
+TL;DR (UK Version) - Don't be a dick like Dom
 
 ## Led status as set by the Framework
 
