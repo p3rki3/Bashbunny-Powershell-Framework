@@ -4,7 +4,7 @@ Powershell Framework for the Hak5 Bashbunny
 
 * Author: p3rki3
 * Extension
-* Version: 0.91     December 2020
+* Version: 0.92     December 2020
 * Firmware support: 1.6
 * Target version: Windows 10
 
@@ -35,6 +35,7 @@ The full Framework consists of the following bash functions
     INJECT_PSSCRIPT <Powershell Script FileName> <Optional: Bashbunny loot FileName>
     INJECT_PSCOMMAND <"Powershell command line">
     INJECT_PSFILE <File to inject> <Optional: "RUN" or "NOEXEC" (default) or blank>
+    REMOVE_PSTEMPFILE <List of temp files to remove from powershell environment>
     CLOSE_POWERSHELL
     STASH_LOOT <Loot Directory Name>
 
@@ -73,6 +74,8 @@ in your powershell script.  The example scripts show how to capture the output o
 
 The INJECT_PSFILE function injects a file from the Bashbunny payload switch folder into powershell temporary environment.  Optionally, you can also run the file if it is executable.  The first parameter is the name of the file to inject; if the second paramter is "RUN", then it will be executed in powershell. 
 
+REMOVE_PSTEMPFILE will remove any file from the Powershell temporary directory that is listed as an argument to the function - typically you would call this just before CLOSE_POWERSHELL with a list of any modules, scripts or other files you have injected into Powershell.  The framework will take care of removing any temporary files it has created itself when CLOSE_POWERSHELL is called.
+
 CLOSE_POWERSHELL does cleanup and exits powershell (unless you have set "NOISY" in the INVOKE_POWERSHELL parameters)
 
 STASH_LOOT will move your exfiltrated loot files from a loot sub-folder of the switch folder (where they are stored while the payload is running) into /loot/<Directory>n where Directory is the parameter passed to the function, and n is a number which increments from zero.  This allows you to run the payload multiple times without having to clear down loot folders, or get your loot overwritten.
@@ -104,6 +107,7 @@ Now for the bashbunny payload.  Again, the bashbunny powershell framework makes 
     LED ATTACK
     INJECT_PSSCRIPT getinfo.ps1 CompInfo.txt          # Run the script getinfo.ps1 and capture the loot to CompInfo.txt
     LED CLEANUP
+    REMOVE_PSTEMPFILE getinfo.ps1                     # Note you do NOT need to invoke this function for any loot files
     CLOSE_POWERSHELL                                  # CLose down powershell and tidy up the windows run line
     STASH_LOOT CompInfo                               # Save the loot properly on the bashbunny
     LED FINISH
